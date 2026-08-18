@@ -1,0 +1,5 @@
+.env
+.venv/
+__pycache__/
+study_history.db
+audio_history/
