@@ -1,183 +1,204 @@
-🎙️ Voice Notes to Flashcards
+# Voice Notes to Flashcards
 
-An AI-powered Streamlit application that converts lecture recordings and
-uploaded audio into structured study material.
+Voice Notes to Flashcards is a Streamlit application that turns lecture
+recordings and uploaded audio into structured study material with the Google
+Gemini API. It produces a transcript, summary, key concepts, editable
+flashcards, and a practice quiz from a single audio file.
 
-🚀 Features
+---
+## Live Link
+https://voicetoeverything.streamlit.app/
 
-🎙️ Record or upload lecture audio
+## Features
 
-📝 Generate lecture transcripts
+- Record lecture audio directly in the browser.
+- Upload audio files in MP3, WAV, M4A, OGG, or WEBM format.
+- Generate an important-content transcript from the lecture.
+- Generate an AI-written summary and a list of key concepts.
+- Create between 5 and 30 flashcards and select the desired difficulty.
+- Review and edit generated flashcards in a table.
+- Download the edited flashcards as a CSV file.
+- Generate a five-question multiple-choice practice quiz.
+- Submit quiz answers and receive a percentage score.
+- Browse saved audio items in the study history view.
+- Search history by file name or subject and filter it by recording or upload.
+- Delete individual history items and their locally stored audio files.
+- View dashboard metrics for the current flashcards, quiz questions, and score.
 
-📖 Generate AI-powered summaries
+## How the Application Works
 
-🧠 Extract key concepts
+1. Select a subject and difficulty in the sidebar.
+2. Choose the number of flashcards to generate. The available range is 5 to
+	30 cards in increments of 5.
+3. Optionally enable summary and quiz generation.
+4. Record a lecture or upload an audio file.
+5. Select **Generate Study Material**.
+6. The application sends the audio and an academic study prompt to the Gemini
+	model `gemini-3-flash-preview`.
+7. Gemini returns structured JSON containing the transcript, summary, key
+	concepts, flashcards, and quiz questions.
+8. Review the results in the Summary, Key Concepts, Flashcards, and Quiz tabs.
+9. Edit and download flashcards, or submit the quiz to calculate a score.
 
-🃏 Generate flashcards
+The application asks Gemini to keep answers concise, create exam-focused
+questions, generate five quiz questions, and avoid adding information that is
+not supported by the lecture. AI-generated content should still be checked
+against the original lecture before it is used for assessment or formal study.
 
-🎯 Generate practice quizzes
+## Technology Stack
 
-🏆 Calculate and display quiz scores
+- Python
+- Streamlit for the user interface
+- Google Gemini API through the `google-genai` package
+- Pandas for flashcard tables and analysis
+- SQLite for local study history
+- `python-dotenv` for loading environment variables
 
-📜 Maintain study history
+## Project Structure
 
-🗃️ Store study sessions using SQLite
-
-🗑️ Delete previous history items
-
-📊 Dashboard with study statistics
-
-🤖 Gemini-powered study material generation
-
-🛠️ Technologies Used
-
-Python
-
-Streamlit
-
-Google Gemini API
-
-Pandas
-
-SQLite
-
-python-dotenv
-
-Audio processing and transcription libraries
-
-📁 Project Structure
-
+```text
 voice_notes_flashcards/
-├── app.py
-├── history.py
-├── .gitignore
-├── .env
-├── study_history.db
-├── audio_history/
-└── .venv/
+|-- app.py                 # Streamlit user interface and AI workflow
+|-- history.py             # SQLite schema and study-history operations
+|-- requirements.txt       # Python dependencies
+|-- README.md              # Project documentation
+`-- audio_history/         # Runtime directory for saved audio files
+```
 
-.env, .venv/, study_history.db, and audio_history/ should not
-be uploaded to GitHub.
+The following files and directories are created or used locally at runtime
+and should not be committed:
 
-⚙️ Installation
+- `.env` for the Gemini API key
+- `.venv/` for the local virtual environment
+- `study_history.db` for the SQLite database
+- `audio_history/` for saved recordings and uploads
+- `__pycache__/` and compiled Python files
 
-1. Clone the repository
+## Requirements
 
+- Python 3.10 or newer is recommended.
+- A Google Gemini API key.
+- A modern web browser with microphone access if you want to record audio.
+- Internet access for requests to the Gemini API.
+
+## Installation
+
+Clone the repository and move into the project directory:
+
+```bash
 git clone YOUR_GITHUB_REPOSITORY_URL
 cd voice_notes_flashcards
+```
 
-2. Create a virtual environment
+Create and activate a virtual environment.
 
+PowerShell:
+
+```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
+```
 
-3. Install dependencies
+macOS or Linux:
 
-pip install streamlit pandas python-dotenv google-genai
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-Install any additional audio/transcription packages required by your
-app.py.
+Install the project dependencies:
 
-🔑 Gemini API Key Setup
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
 
-Create a .env file in the project root:
+## Configuration
 
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+Create a file named `.env` in the project root and add your Gemini API key:
 
-Never commit your .env file or expose your API key publicly.
+```env
+GEMINI_API_KEY=your_gemini_api_key
+```
 
-▶️ Run the Application
+The application loads this value when it starts. If the variable is missing,
+the application stops and displays an error. Never commit `.env` or share the
+API key publicly.
 
+## Running the Application
+
+Start Streamlit from the project root:
+
+```bash
 python -m streamlit run app.py
+```
 
-Then open the local URL shown in the terminal, normally:
+Streamlit normally serves the application at:
 
+```text
 http://localhost:8501
+```
 
-🧠 How It Works
+Open the displayed local URL in your browser. When recording audio, grant the
+browser permission to use your microphone.
 
-The user records or uploads a lecture.
+## Study History and Local Data
 
-The application processes the audio.
+The application creates `study_history.db` beside the Python files and
+initializes the database automatically. The history table includes metadata
+such as the file name, source type, subject, local audio path, creation time,
+generated study content, quiz score, and favorite status.
 
-The lecture content is sent to the configured AI model.
+Audio files are copied into `audio_history/` when they are recorded or
+uploaded. The History view provides session counts, search, source filtering,
+and deletion. Deleting a history item also removes its associated local audio
+file when that file is available.
 
-Gemini generates structured study material.
+Generated content is held in the active Streamlit session. Persisted content
+can be displayed when it has been saved with a history record.
 
-The application displays the transcript, summary, key concepts,
-flashcards, and quiz.
+## Security and Privacy
 
-Quiz answers are evaluated and the score is updated.
+- API credentials are read from an environment file rather than hard-coded.
+- Audio is stored locally in `audio_history/`.
+- Audio submitted for generation is sent to the configured Google Gemini API.
+- Do not upload confidential or personally identifiable recordings unless your
+  organization permits processing by the selected AI service.
+- Review `.gitignore` before publishing the repository to ensure local data
+  and credentials remain excluded.
 
-Study sessions are stored in a local SQLite database.
+## Troubleshooting
 
-Study history can be managed from the History section.
+**The application reports that the Gemini API key is missing**
 
-📚 Study History
+Confirm that `.env` is in the same directory as `app.py` and that it contains
+the exact variable name `GEMINI_API_KEY`.
 
-The application stores study-session information such as:
+**Audio recording does not work**
 
-File name and type
+Use a supported browser, allow microphone access, and confirm that the browser
+and operating system can detect the intended microphone.
 
-Subject
+**Generation fails or returns invalid content**
 
-Audio path
+Check the API key, network connection, Gemini account limits, and audio file
+format. Large or unclear recordings may also produce incomplete results.
 
-Creation date
+**The application does not start**
 
-Transcript
+Activate the virtual environment and reinstall dependencies with
+`python -m pip install -r requirements.txt`.
 
-Summary
+## Future Improvements
 
-Key concepts
+- Add user authentication and cloud-based history.
+- Persist generated content and quiz scores consistently for every session.
+- Add spaced-repetition scheduling and richer learning analytics.
+- Support multilingual transcription and study material generation.
+- Add export formats such as PDF and JSON.
+- Add automated tests for database operations and AI response validation.
 
-Flashcards
-
-Quiz
-
-Quiz score
-
-Favorite status
-
-🔐 Security
-
-The Gemini API key is loaded from .env instead of being hard-coded.
-
-The .gitignore excludes sensitive and local files:
-
-.env
-.venv/
-__pycache__/
-*.pyc
-study_history.db
-audio_history/
-
-🎯 Project Goal
-
-Voice Notes to Flashcards helps students convert lecture recordings into
-organized learning resources automatically, reducing the time required
-to create notes, flashcards, and practice quizzes manually.
-
-🔮 Future Improvements
-
-Cloud-based study history
-
-User authentication
-
-Advanced learning analytics
-
-Spaced-repetition flashcards
-
-Voice-based quiz interaction
-
-Multi-language support
-
-PDF export
-
-Mobile-friendly interface
-
-👨‍💻 Author
+## Author
 
 Margani Siddartha
-
-CSE Student & Developer
+CSE Student and Developer
